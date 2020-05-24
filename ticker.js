@@ -1,10 +1,3 @@
-/**
- * SimpleJS simple lightweight library.
- * @type {{Module: Module;Common:{Ticker:Ticker}}}
- */
-var SimpleJS = window.SimpleJS || {};
-SimpleJS.Common = SimpleJS.Common || {};
-
 var Ticker = (function () {
   var initDate = new Date();
   var currId = 0;
@@ -69,5 +62,3 @@ var Ticker = (function () {
 if (typeof module != "undefined" && typeof module.exports != "undefined") {
   module.exports = Ticker;
 }
-
-SimpleJS.Common.Ticker = Ticker;
