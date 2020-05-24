@@ -59,6 +59,13 @@ var Ticker = (function () {
   return Ticker;
 })();
 
+(function () {
+  if (typeof window !== "undefined") {
+    window.SimpleJS = window.SimpleJS || {};
+    window.SimpleJS.Ticker = Ticker;
+  }
+})();
+
 if (typeof module != "undefined" && typeof module.exports != "undefined") {
   module.exports = Ticker;
 }

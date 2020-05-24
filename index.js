@@ -12,12 +12,8 @@ var SimpleJS;
     SimpleJS = {};
     Module = require('./module');
     Ticker = require('./ticker');
-    var Ajax = require('./ajax');
+    require('./ajax');
     require('./router');
-    SimpleJS.Module = Module;
-    SimpleJS.Ticker = Ticker;
-  } else {
-    SimpleJS = window.SimpleJS || {};
     SimpleJS.Module = Module;
     SimpleJS.Ticker = Ticker;
   }

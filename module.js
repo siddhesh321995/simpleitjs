@@ -220,9 +220,11 @@ var Module = (function () {
    * Extends module by calling given function, module score is provided as arg and expected new updated scope.
    * Use this to extend functionality
    * @param {string} name name of module to get.
+   * @param {Function} fnc extnding callback function.
    */
   Module.extend = function extend(name, fnc) {
-    var out = fnc(Module.get(name));
+    var scope = Module.get(name);
+    var out = fnc.call(scope, scope);
 
     if (out) {
       modules[name] = out;
@@ -231,6 +233,13 @@ var Module = (function () {
   };
 
   return Module;
+})();
+
+(function () {
+  if (typeof window !== "undefined") {
+    window.SimpleJS = window.SimpleJS || {};
+    window.SimpleJS.Module = Module;
+  }
 })();
 
 if (typeof module != "undefined" && typeof module.exports != "undefined") {
