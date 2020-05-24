@@ -1,0 +1,25 @@
+{
+  "name": "simpleitjs",
+  "version": "1.0.1",
+  "description": "Simple light frontend framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siddhesh321995/simplejs.git"
+  },
+  "keywords": [
+    "SimpleJS",
+    "Framework",
+    "Frontend",
+    "Light"
+  ],
+  "author": "Siddhesh Kulkarni",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/siddhesh321995/simplejs/issues"
+  },
+  "homepage": "https://github.com/siddhesh321995/simplejs#readme"
+}
