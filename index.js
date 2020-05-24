@@ -2,7 +2,13 @@
  * SimpleJS simple lightweight library.
  * @type {{Module: Module;Common:{Ticker:Ticker}}}
  */
-var SimpleJS = window.SimpleJS || {};
+var SimpleJS;
+
+if (typeof window === "undefined") {
+  SimpleJS = {};
+} else {
+  SimpleJS = window.SimpleJS;
+}
 
 var Module = (function () {
   /**
@@ -240,7 +246,7 @@ var Module = (function () {
 })();
 
 if (typeof module != "undefined" && typeof module.exports != "undefined") {
-  module.exports.Module = Module;
+  module.exports.SimpleJS = SimpleJS;
 }
 
 SimpleJS.Module = Module;
