@@ -1,11 +1,22 @@
 /// <reference path="./module.ts" />
+/// <reference path="./module-scope.ts" />
+
+
+let ModuleScopeClass: typeof ModuleScope;
+if (typeof window === "undefined") {
+  ModuleScopeClass = require('./module-scope');
+} else {
+  const win: any = window;
+  ModuleScopeClass = win.ModuleScope;
+}
+
 /**
  * Ajax module
  * Usful to create Ajax XHR requests.
  * @param {Ajax} Ajax this module
  * @returns {Ajax}
  */
-class Ajax extends ModuleScope {
+class Ajax extends ModuleScopeClass {
   constructor() {
     super();
   }

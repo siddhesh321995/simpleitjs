@@ -1,15 +1,15 @@
+/// <reference path="./module-scope.ts" />
+
 const moduleCollection: Module[] = [];
 const readyModules: { [id: string]: boolean } = {};
 const modules: { [id: string]: ModuleScope } = {};
 
-class ModuleScope {
-  public static invoke(module: ModuleScope, ...dependencies: ModuleScope[]): ModuleScope {
-    return module;
-  }
-
-  constructor(...deps: any[]) {
-
-  }
+let ModuleScopeMain: typeof ModuleScope;
+if (typeof window === "undefined") {
+  ModuleScopeMain = require('./module-scope');
+} else {
+  const win: any = window;
+  ModuleScopeMain = win.ModuleScope;
 }
 
 /**
@@ -22,7 +22,7 @@ class ModuleScope {
 class Module {
   name: string;
   dependencies: string[];
-  readyFnc: typeof ModuleScope;
+  readyFnc: typeof ModuleScopeMain;
   scope: ModuleScope;
   moduleHolder: ModuleScope;
 
@@ -40,8 +40,8 @@ class Module {
     this.name = arguments[0];
     this.dependencies = dependencies;
     this.readyFnc = arguments[arguments.length - 1];
-    this.scope = new ModuleScope();
-    this.moduleHolder = new ModuleScope();
+    this.scope = new ModuleScopeMain();
+    this.moduleHolder = new ModuleScopeMain();
 
     moduleCollection.push(this);
 
@@ -145,7 +145,7 @@ class Module {
         continue;
       }
       readyModules[moduleNames[i]] = true;
-      module.scope = new ModuleScope();
+      module.scope = new ModuleScopeMain();
       const inst = new module.readyFnc();
       modules[module.name] = inst;
     }

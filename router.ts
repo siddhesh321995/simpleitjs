@@ -1,12 +1,21 @@
 /// <reference path="./module.ts" />
 /// <reference path="./ajax.ts" />
+/// <reference path="./module-scope.ts" />
+
+let ModuleScopeParent: typeof ModuleScope;
+if (typeof window === "undefined") {
+  ModuleScopeParent = require('./module-scope');
+} else {
+  const win: any = window;
+  ModuleScopeParent = win.ModuleScope;
+}
 
 class RouterLoaderAttributes {
   public basePath?: string = "";
   public rootElemSelector?: string = "";
 }
 
-class Router extends ModuleScope {
+class Router extends ModuleScopeParent {
   private Ajax!: Ajax;
 
   public configs: any = [];
