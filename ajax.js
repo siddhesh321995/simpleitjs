@@ -1,3 +1,5 @@
+
+
 /**
  * Ajax module
  * Usful to create Ajax XHR requests.
@@ -88,6 +90,15 @@ var Ajax = function Ajax(Ajax) {
   };
 
   return this;
-}
+};
 
-new SimpleJS.Module('Ajax', Ajax);
+(function () {
+  var Module;
+  if (typeof window === "undefined") {
+    Module = require('./module');
+  } else {
+    window.SimpleJS = window.SimpleJS || {};
+    Module = window.SimpleJS.Module;
+  }
+  new Module('Ajax', Ajax);
+})();

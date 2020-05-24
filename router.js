@@ -2,9 +2,8 @@
  * 
  * @param {Router} Router this module
  * @param {Ajax} Ajax Ajax module
- * @param {jQuery} $ jQuery module
  */
-var Router = function Router(Router, Ajax, $) {
+var Router = function Router(Router, Ajax) {
   /**
    * Loads state by state object
    * @param {Object} state State object to load.
@@ -40,7 +39,7 @@ var Router = function Router(Router, Ajax, $) {
     }
 
     Ajax.get(state.template, function (templateHTML) {
-      Router.rootElemSelector && $(Router.rootElemSelector).html(templateHTML);
+      document.querySelector(Router.rootElemSelector).innerHTML = templateHTML;
 
       if (state.authGaurds && state.authGaurds.length && typeof state.authGaurdCb == 'function') {
         Promise.all(state.authGaurds).then(function () {
@@ -129,4 +128,13 @@ var Router = function Router(Router, Ajax, $) {
   return this;
 };
 
-new SimpleJS.Module('Router', 'Ajax', '$', Router);
+(function () {
+  var Module;
+  if (typeof window === "undefined") {
+    Module = require('./module');
+  } else {
+    window.SimpleJS = window.SimpleJS || {};
+    Module = window.SimpleJS.Module;
+  }
+  new Module('Router', 'Ajax', Router);
+})();
