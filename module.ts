@@ -25,6 +25,7 @@ class Module {
   readyFnc: typeof ModuleScopeMain;
   scope: ModuleScope;
   moduleHolder: ModuleScope;
+  constructionOpts?: Object;
 
   public constructor(...args: any[]) {
     const dependencies = [];
@@ -42,6 +43,10 @@ class Module {
     this.readyFnc = arguments[arguments.length - 1];
     this.scope = new ModuleScopeMain();
     this.moduleHolder = new ModuleScopeMain();
+    if (typeof arguments[arguments.length - 2] == "object") {
+      this.constructionOpts = arguments[arguments.length - 2];
+      dependencies.pop();
+    }
 
     moduleCollection.push(this);
 
@@ -60,7 +65,7 @@ class Module {
    * Returns list of unresolved modules.
    * @param {string[]} mods modules names
    */
-  private getUnResolvedModules(mods: string[]): string[] {
+  public getUnResolvedModules(mods: string[]): string[] {
     const unreadyMods = [];
     for (let i = 0; i < mods.length; i++) {
       if (!readyModules[mods[i]]) {
@@ -75,7 +80,7 @@ class Module {
    * @param {string} name module name
    * @returns {Module}
    */
-  private static getModuleByName(name: string) {
+  public static getModuleByName(name: string) {
     for (var i = 0; i < moduleCollection.length; i++) {
       if (moduleCollection[i].name == name) {
         return moduleCollection[i];
@@ -84,7 +89,7 @@ class Module {
     return null;
   }
 
-  private checkInterDependency(module: Module, overTimeReady: { [id: string]: boolean } = {}) {
+  public checkInterDependency(module: Module, overTimeReady: { [id: string]: boolean } = {}) {
     const unReadyMods = this.getUnResolvedModules(module.dependencies);
     let registered: boolean = false;
     for (var i = 0; i < unReadyMods.length; i++) {
@@ -138,15 +143,20 @@ class Module {
    * Releases all modules with support to interdependency on each other.
    * @param {string[]} moduleNames module names in string list.
    */
-  private releaseModules(moduleNames: string[]) {
+  public releaseModules(moduleNames: string[]) {
     for (var i = 0; i < moduleNames.length; i++) {
       var module = Module.getModuleByName(moduleNames[i]);
       if (!module) {
         continue;
       }
       readyModules[moduleNames[i]] = true;
+      let inst: ModuleScope;
+      if (typeof this.constructionOpts != "undefined") {
+        inst = new module.readyFnc(this.constructionOpts);
+      } else {
+        inst = new module.readyFnc();
+      }
       module.scope = new ModuleScopeMain();
-      const inst = new module.readyFnc();
       modules[module.name] = inst;
     }
 
@@ -173,7 +183,7 @@ class Module {
   /**
    * Checks and releases modules from main collection
    */
-  private checkNReleaseMods() {
+  public checkNReleaseMods() {
     for (var i = 0; i < moduleCollection.length; i++) {
       var currMod = moduleCollection[i];
       if (!readyModules[currMod.name] && this.areDepLoaded(currMod)) {
@@ -187,7 +197,7 @@ class Module {
    * @param {Module} module Module to check
    * @returns {boolean}
    */
-  private areDepLoaded(module: Module): boolean {
+  public areDepLoaded(module: Module): boolean {
     for (var i = 0; i < module.dependencies.length; i++) {
       if (!readyModules[module.dependencies[i]]) {
         return false;
@@ -201,15 +211,20 @@ class Module {
    * Releases module, calls its ready function.
    * @param {Module} module Module to release.
    */
-  private releaseModule(module: Module) {
+  public releaseModule(module: Module) {
     readyModules[module.name] = true;
-    const inst = new module.readyFnc();
+    let inst: ModuleScope;
+    if (typeof this.constructionOpts != "undefined") {
+      inst = new module.readyFnc(this.constructionOpts);
+    } else {
+      inst = new module.readyFnc();
+    }
     module.scope = inst;
     var resolvedDeps = [];
     for (var j = 0; j < module.dependencies.length; j++) {
       resolvedDeps.push(modules[module.dependencies[j]]);
     }
-    
+
     module.moduleHolder = module.readyFnc.invoke.apply(module.scope, [module.scope, ...resolvedDeps]);
 
     if (module.moduleHolder) {
