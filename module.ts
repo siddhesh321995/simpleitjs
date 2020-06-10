@@ -12,6 +12,15 @@ if (typeof window === "undefined") {
   ModuleScopeMain = win.ModuleScope;
 }
 
+enum ModuleType {
+  Standard,
+  Class
+}
+
+declare class ModuleOpts {
+  type: ModuleType;
+}
+
 /**
  * Creates a new Module, attaches dependencies
  * @param {string} Name 1st aargument, name of module to be registed.
@@ -26,6 +35,8 @@ class Module {
   scope: ModuleScope;
   moduleHolder: ModuleScope;
   constructionOpts?: Object;
+  moduleOpts?: ModuleOpts;
+  public type: ModuleType = ModuleType.Standard;
 
   public constructor(...args: any[]) {
     const dependencies = [];
@@ -47,6 +58,15 @@ class Module {
       this.constructionOpts = arguments[arguments.length - 2];
       dependencies.pop();
     }
+
+    if (typeof arguments[arguments.length - 3] == "object") {
+      this.moduleOpts = arguments[arguments.length - 3];
+      dependencies.pop();
+    }
+
+    if (this.moduleOpts) {
+      this.type = this.moduleOpts.type;
+    }    
 
     moduleCollection.push(this);
 
@@ -239,6 +259,10 @@ class Module {
    * @param {string} name name of module to get.
    */
   public static get(name: string) {
+    const mod = Module.getModuleByName(name);
+    if (mod && mod.type === ModuleType.Class && mod.readyFnc) {
+      return mod.readyFnc;
+    }
     return modules[name];
   }
 
@@ -267,6 +291,7 @@ class Module {
     const win: any = window;
     win.SimpleJS = win.SimpleJS || {};
     win.SimpleJS.Module = Module;
+    win.SimpleJS.ModuleType = ModuleType;
   }
 })();
 
